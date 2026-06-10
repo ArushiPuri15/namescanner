@@ -1,0 +1,40 @@
+:root {
+  color-scheme: light dark;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  line-height: 1.5;
+  background: #0f1419;
+  color: #e7ecf3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.shell {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  color: #8aa0b5;
+}
+
+.lede {
+  color: #b7c4d1;
+}
+
+.card {
+  margin-top: 2rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #243041;
+  border-radius: 12px;
+  background: #151d27;
+}
