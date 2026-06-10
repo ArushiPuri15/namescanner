@@ -28,6 +28,7 @@ export function createApp(env: AppEnv) {
       status: "ready",
       probeMode: registry.mode,
       probesConfigured: registry.probes.map((probe) => probe.id),
+      pricingProvider: registry.pricing?.id ?? null,
       warnings: registry.warnings,
     }),
   );
@@ -48,6 +49,8 @@ export function createApp(env: AppEnv) {
     const report = await runNameScan({
       request: parsed.data,
       probes: registry.probes,
+      pricing: registry.pricing,
+      usdToInrRate: env.USD_TO_INR_RATE,
       timeoutMs: env.PROBE_TIMEOUT_MS,
     });
 

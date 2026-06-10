@@ -19,6 +19,7 @@ NameScanner is a **probe-orchestration engine** for evaluating business name can
 | `@namescanner/config` | Typed environment parsing | `zod` |
 | `@namescanner/adapters-stub` | Simulated probes (dev/test; `PROBE_MODE=stub`) | `application`, `domain` |
 | `@namescanner/adapters-rdap` | Real domain checks via public RDAP (`PROBE_MODE=live`) | `application`, `domain` |
+| `@namescanner/adapters-namecheap` | Registrar catalog pricing (`DomainPricingProvider`) | `application`, `contracts` |
 | `@namescanner/adapters-*` | Other external integrations | `application`, `contracts` |
 | `@namescanner/api` | Hono transport, DI wiring | `application`, `contracts`, `config` |
 | `@namescanner/web` | React UI | API over HTTP only |
@@ -63,12 +64,11 @@ Every adapter implements `AvailabilityProbe`:
 | 1 | Monorepo scaffold, contracts, ports, ADRs |
 | 2 | Scoring, probe timeouts, stub adapters, composition root |
 | 3 | RDAP domain adapter (live mode) |
-| 4 | Registrar pricing adapter |
-| 5 | Registrar pricing adapter (mock → Namecheap) |
-| 6 | Brave + GitHub + India link adapters |
-| 7 | API wiring + OpenAPI |
-| 8 | Web UI |
-| 9 | Deploy docs + optional MCP |
+| 4 | Registrar pricing adapter (stub + Namecheap) |
+| 5 | Brave + GitHub + India link adapters |
+| 6 | API wiring + OpenAPI |
+| 7 | Web UI |
+| 8 | Deploy docs + optional MCP |
 
 ## Adding a new probe
 

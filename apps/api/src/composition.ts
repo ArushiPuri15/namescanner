@@ -1,13 +1,31 @@
-import type { AvailabilityProbe } from "@namescanner/application";
+import type { AvailabilityProbe, DomainPricingProvider } from "@namescanner/application";
+import { NamecheapPricingProvider } from "@namescanner/adapters-namecheap";
 import { RdapDomainProbe } from "@namescanner/adapters-rdap";
-import { createStubProbeSuite } from "@namescanner/adapters-stub";
+import {
+  StubDomainPricingProvider,
+  createStubProbeSuite,
+} from "@namescanner/adapters-stub";
 import type { AppEnv } from "@namescanner/config";
 
 export type ProbeRegistry = {
   probes: AvailabilityProbe[];
+  pricing: DomainPricingProvider | null;
   mode: AppEnv["PROBE_MODE"];
   warnings: string[];
 };
+
+function createNamecheapPricing(env: AppEnv): DomainPricingProvider | null {
+  if (!env.NAMECHEAP_API_USER || !env.NAMECHEAP_API_KEY || !env.NAMECHEAP_CLIENT_IP) {
+    return null;
+  }
+
+  return new NamecheapPricingProvider({
+    apiUser: env.NAMECHEAP_API_USER,
+    apiKey: env.NAMECHEAP_API_KEY,
+    clientIp: env.NAMECHEAP_CLIENT_IP,
+    sandbox: env.NAMECHEAP_SANDBOX,
+  });
+}
 
 /**
  * Composition root: selects probe implementations from environment.
@@ -24,6 +42,7 @@ export function createProbeRegistry(env: AppEnv): ProbeRegistry {
     return {
       mode: env.PROBE_MODE,
       probes: createStubProbeSuite(),
+      pricing: new StubDomainPricingProvider(),
       warnings,
     };
   }
@@ -38,13 +57,15 @@ export function createProbeRegistry(env: AppEnv): ProbeRegistry {
     warnings.push("BRAVE_SEARCH_API_KEY is not set — web collision probe unavailable");
   }
 
-  if (!env.NAMECHEAP_API_USER) {
-    warnings.push("Registrar pricing is not configured — budget filters use RDAP only");
+  const pricing = createNamecheapPricing(env);
+  if (!pricing) {
+    warnings.push("Registrar pricing is not configured — budget filters are unavailable");
   }
 
   return {
     mode: env.PROBE_MODE,
     probes,
+    pricing,
     warnings,
   };
 }

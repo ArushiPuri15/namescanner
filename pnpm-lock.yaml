@@ -26,6 +26,9 @@ importers:
       '@hono/node-server':
         specifier: ^1.14.4
         version: 1.19.14(hono@4.12.25)
+      '@namescanner/adapters-namecheap':
+        specifier: workspace:*
+        version: link:../../packages/adapters-namecheap
       '@namescanner/adapters-rdap':
         specifier: workspace:*
         version: link:../../packages/adapters-rdap
@@ -79,6 +82,19 @@ importers:
       vite:
         specifier: ^7.0.0
         version: 7.3.5(@types/node@22.19.20)(tsx@4.22.4)
+
+  packages/adapters-namecheap:
+    dependencies:
+      '@namescanner/application':
+        specifier: workspace:*
+        version: link:../application
+      '@namescanner/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+    devDependencies:
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.6(@types/node@22.19.20)(tsx@4.22.4)
 
   packages/adapters-rdap:
     dependencies:

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApiResponse xmlns="http://api.namecheap.com/xml.response" Status="OK">
+  <Errors />
+  <RequestedCommand>namecheap.users.getPricing</RequestedCommand>
+  <CommandResponse Type="namecheap.users.getPricing">
+    <UserGetPricingResult>
+      <ProductType Name="DOMAIN">
+        <ProductCategory Name="REGISTER">
+          <Product Name="com">
+            <Price Duration="1" DurationType="YEAR" Price="10.98" RegularPrice="10.98" YourPrice="9.18" Currency="USD" />
+          </Product>
+          <Product Name="in">
+            <Price Duration="1" DurationType="YEAR" Price="7.98" RegularPrice="7.98" YourPrice="7.98" Currency="USD" />
+          </Product>
+          <Product Name="co.in">
+            <Price Duration="1" DurationType="YEAR" Price="6.98" RegularPrice="6.98" YourPrice="6.98" Currency="USD" />
+          </Product>
+        </ProductCategory>
+      </ProductType>
+    </UserGetPricingResult>
+  </CommandResponse>
+</ApiResponse>

@@ -2,7 +2,7 @@
 
 Probe-orchestration engine for evaluating business name candidates — domain availability, web collision, and registry links — with normalized scoring and graceful partial failures.
 
-> **Session 3:** Real domain checks via RDAP in `PROBE_MODE=live`. Use `PROBE_MODE=stub` locally for fake data.
+> **Session 4:** Registrar pricing via `DomainPricingProvider` — mock INR prices in `PROBE_MODE=stub`, Namecheap catalog pricing in live mode when configured.
 
 ## Stack
 
@@ -54,17 +54,20 @@ pnpm dev
 - API: http://localhost:3001/health
 - Web: http://localhost:5173
 
-### Example scan (stub — no probes yet)
+### Example scan (stub mode)
 
 ```bash
+# Set PROBE_MODE=stub in .env for local dev
 curl -s http://localhost:3001/v1/scans \
   -H 'content-type: application/json' \
   -d '{
     "seed": "Matrix",
     "locale": { "country": "IN" },
     "tlds": ["in", "co.in"],
-    "suffixes": ["devworks", "softworks"]
-  }' | jq
+    "suffixes": ["devworks", "softworks"],
+    "constraints": { "maxDomainPriceInr": 800 },
+    "probes": ["domain"]
+  }' | jq '.candidates[0].pricing, .candidates[0].risks'
 ```
 
 ## Scripts
@@ -81,11 +84,9 @@ curl -s http://localhost:3001/v1/scans \
 
 1. Brave web collision adapter
 2. GitHub handle probe
-3. India MCA / IP India link builder
-4. Registrar pricing (mock → Namecheap)
-5. Web UI results table
-6. Fly.io + Cloudflare Pages deploy
-7. MCP server (v2)
+3. Web UI results table
+4. Fly.io + Cloudflare Pages deploy
+5. MCP server (v2)
 
 ## License
 

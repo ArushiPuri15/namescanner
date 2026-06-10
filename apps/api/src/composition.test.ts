@@ -8,6 +8,7 @@ describe("createProbeRegistry", () => {
 
     expect(registry.mode).toBe("stub");
     expect(registry.probes.map((probe) => probe.id)).toEqual(["domain", "web", "github"]);
+    expect(registry.pricing?.id).toBe("stub-pricing");
   });
 
   it("registers RDAP domain probe in live mode", () => {
@@ -18,5 +19,7 @@ describe("createProbeRegistry", () => {
     expect(registry.warnings.some((warning) => warning.includes("BRAVE_SEARCH_API_KEY"))).toBe(
       true,
     );
+    expect(registry.pricing).toBeNull();
+    expect(registry.warnings.some((warning) => warning.includes("Registrar pricing"))).toBe(true);
   });
 });

@@ -26,6 +26,20 @@ export const scanRequestSchema = z.object({
 
 export const probeStatusSchema = z.enum(["available", "taken", "unknown", "error"]);
 
+export const domainPriceQuoteSchema = z.object({
+  tld: z.string(),
+  amount: z.number().positive(),
+  currency: z.string().length(3),
+  periodYears: z.number().int().positive().default(1),
+});
+
+export const candidatePricingSchema = z.object({
+  provider: z.string(),
+  quotes: z.array(domainPriceQuoteSchema),
+  cheapestInr: z.number().int().positive().optional(),
+  withinBudget: z.boolean().optional(),
+});
+
 export const probeResultSchema = z.object({
   probe: probeIdSchema,
   provider: z.string(),
@@ -48,6 +62,7 @@ export const candidateReportSchema = z.object({
   name: z.string(),
   domains: z.array(probeResultSchema),
   probes: z.array(probeResultSchema),
+  pricing: candidatePricingSchema.optional(),
   score: scoreBreakdownSchema,
   risks: z.array(z.string()),
   actions: z.object({
@@ -61,6 +76,7 @@ export const scanMetaSchema = z.object({
   partialFailures: z.number().int().nonnegative(),
   durationMs: z.number().int().nonnegative(),
   probesRun: z.array(probeIdSchema),
+  pricingProvider: z.string().optional(),
 });
 
 export const scanReportSchema = z.object({
@@ -73,6 +89,8 @@ export type NameStyle = z.infer<typeof nameStyleSchema>;
 export type ProbeId = z.infer<typeof probeIdSchema>;
 export type ScanRequest = z.infer<typeof scanRequestSchema>;
 export type ProbeStatus = z.infer<typeof probeStatusSchema>;
+export type DomainPriceQuote = z.infer<typeof domainPriceQuoteSchema>;
+export type CandidatePricing = z.infer<typeof candidatePricingSchema>;
 export type ProbeResult = z.infer<typeof probeResultSchema>;
 export type ScoreBreakdown = z.infer<typeof scoreBreakdownSchema>;
 export type CandidateReport = z.infer<typeof candidateReportSchema>;

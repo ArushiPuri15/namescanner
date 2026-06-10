@@ -1,17 +1,22 @@
 import { randomUUID } from "node:crypto";
 import type { ProbeResult, ScanReport, ScanRequest } from "@namescanner/contracts";
 import {
+  buildCandidatePricing,
   buildRegistryActions,
+  derivePricingRisks,
   deriveRisks,
   generateCandidates,
   scoreCandidateFromProbes,
 } from "@namescanner/domain";
 import { runProbeWithTimeout } from "../lib/run-probe-with-timeout.js";
 import type { AvailabilityProbe } from "../ports/availability-probe.js";
+import type { DomainPricingProvider } from "../ports/domain-pricing-provider.js";
 
 export type RunNameScanInput = {
   request: ScanRequest;
   probes: AvailabilityProbe[];
+  pricing?: DomainPricingProvider | null;
+  usdToInrRate?: number;
   timeoutMs: number;
 };
 
@@ -32,12 +37,31 @@ function sortCandidatesByScore<T extends { score: { total: number } }>(candidate
  */
 export async function runNameScan(input: RunNameScanInput): Promise<ScanReport> {
   const startedAt = Date.now();
-  const { request, probes, timeoutMs } = input;
+  const { request, probes, pricing, usdToInrRate, timeoutMs } = input;
 
   const context = { request, timeoutMs };
   const activeProbes = probes.filter((probe) => probe.supports(context));
   const requestedProbeIds = new Set(request.probes);
   const activeProbesForRequest = activeProbes.filter((probe) => requestedProbeIds.has(probe.id));
+
+  let pricingSnapshot:
+    | ReturnType<typeof buildCandidatePricing>
+    | undefined;
+
+  if (pricing?.supports(context)) {
+    const quotes = await pricing.getRegistrationPrices(request.tlds, context);
+    pricingSnapshot = buildCandidatePricing(
+      pricing.id,
+      quotes,
+      request.constraints.maxDomainPriceInr,
+      usdToInrRate,
+    );
+  }
+
+  const pricingRisks = derivePricingRisks(
+    pricingSnapshot,
+    request.constraints.maxDomainPriceInr,
+  );
 
   const candidates = generateCandidates(
     request.seed,
@@ -67,8 +91,9 @@ export async function runNameScan(input: RunNameScanInput): Promise<ScanReport> 
         name: candidate.label,
         domains: domainResults,
         probes: probeResults,
+        pricing: pricingSnapshot,
         score,
-        risks,
+        risks: [...risks, ...pricingRisks],
         actions: buildRegistryActions(candidate.label, request.locale),
         _partialFailures: partialFailures,
       };
@@ -87,6 +112,7 @@ export async function runNameScan(input: RunNameScanInput): Promise<ScanReport> 
       partialFailures,
       durationMs: Date.now() - startedAt,
       probesRun: activeProbesForRequest.map((probe) => probe.id),
+      pricingProvider: pricingSnapshot?.provider,
     },
   };
 }

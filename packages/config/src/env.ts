@@ -16,6 +16,12 @@ const envSchema = z.object({
   NAMECHEAP_API_USER: z.string().optional(),
   NAMECHEAP_API_KEY: z.string().optional(),
   NAMECHEAP_CLIENT_IP: z.string().optional(),
+  NAMECHEAP_SANDBOX: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
+  /** Used when registrar quotes are returned in USD */
+  USD_TO_INR_RATE: z.coerce.number().positive().default(83),
 });
 
 export type AppEnv = z.infer<typeof envSchema>;
