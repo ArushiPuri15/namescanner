@@ -2,7 +2,7 @@
 
 Probe-orchestration engine for evaluating business name candidates — domain availability, web collision, and registry links — with normalized scoring and graceful partial failures.
 
-> **Session 4:** Registrar pricing via `DomainPricingProvider` — mock INR prices in `PROBE_MODE=stub`, Namecheap catalog pricing in live mode when configured.
+> **Session 5:** Brave web collision + GitHub handle probes in `PROBE_MODE=live`. India registry links use site-scoped search URLs.
 
 ## Stack
 
@@ -82,11 +82,10 @@ curl -s http://localhost:3001/v1/scans \
 
 ## Roadmap
 
-1. Brave web collision adapter
-2. GitHub handle probe
-3. Web UI results table
-4. Fly.io + Cloudflare Pages deploy
-5. MCP server (v2)
+1. OpenAPI spec
+2. Web UI results table
+3. Fly.io + Cloudflare Pages deploy
+4. MCP server (v2)
 
 ## License
 

@@ -46,6 +46,34 @@ export function buildCandidatePricing(
   };
 }
 
+export type GodaddyDomainPriceInput = {
+  tld: string;
+  amount?: number;
+  currency?: string;
+  periodYears?: number;
+};
+
+export function buildCandidatePricingFromGodaddyDomains(
+  domains: GodaddyDomainPriceInput[],
+  maxDomainPriceInr?: number,
+  usdToInrRate = DEFAULT_USD_TO_INR,
+): CandidatePricingResult | undefined {
+  const quotes = domains
+    .filter((domain) => domain.amount !== undefined && domain.currency !== undefined)
+    .map((domain) => ({
+      tld: domain.tld,
+      amount: domain.amount as number,
+      currency: domain.currency as string,
+      periodYears: domain.periodYears ?? 1,
+    }));
+
+  if (quotes.length === 0) {
+    return undefined;
+  }
+
+  return buildCandidatePricing("godaddy", quotes, maxDomainPriceInr, usdToInrRate);
+}
+
 export function derivePricingRisks(
   pricing: CandidatePricingResult | undefined,
   maxDomainPriceInr?: number,

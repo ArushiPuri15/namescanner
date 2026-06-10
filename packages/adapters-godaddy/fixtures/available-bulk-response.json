@@ -1,0 +1,22 @@
+{
+  "domains": [
+    {
+      "available": true,
+      "currency": "USD",
+      "definitive": true,
+      "domain": "matrixdevworks.in",
+      "period": 1,
+      "price": 14990000,
+      "renewalPrice": 14990000
+    },
+    {
+      "available": false,
+      "currency": "USD",
+      "definitive": true,
+      "domain": "matrixdevworks.co.in",
+      "period": 1,
+      "price": 11990000,
+      "renewalPrice": 11990000
+    }
+  ]
+}

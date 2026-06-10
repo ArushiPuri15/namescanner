@@ -20,6 +20,9 @@ NameScanner is a **probe-orchestration engine** for evaluating business name can
 | `@namescanner/adapters-stub` | Simulated probes (dev/test; `PROBE_MODE=stub`) | `application`, `domain` |
 | `@namescanner/adapters-rdap` | Real domain checks via public RDAP (`PROBE_MODE=live`) | `application`, `domain` |
 | `@namescanner/adapters-namecheap` | Registrar catalog pricing (`DomainPricingProvider`) | `application`, `contracts` |
+| `@namescanner/adapters-brave` | Web collision via Brave Search (`PROBE_MODE=live`) | `application`, `domain` |
+| `@namescanner/adapters-github` | GitHub user/org handle checks (`PROBE_MODE=live`) | `application`, `domain` |
+| `@namescanner/adapters-godaddy` | GoDaddy domain availability + per-name pricing | `application`, `domain` |
 | `@namescanner/adapters-*` | Other external integrations | `application`, `contracts` |
 | `@namescanner/api` | Hono transport, DI wiring | `application`, `contracts`, `config` |
 | `@namescanner/web` | React UI | API over HTTP only |
@@ -66,7 +69,7 @@ Every adapter implements `AvailabilityProbe`:
 | 3 | RDAP domain adapter (live mode) |
 | 4 | Registrar pricing adapter (stub + Namecheap) |
 | 5 | Brave + GitHub + India link adapters |
-| 6 | API wiring + OpenAPI |
+| 6 | OpenAPI spec |
 | 7 | Web UI |
 | 8 | Deploy docs + optional MCP |
 

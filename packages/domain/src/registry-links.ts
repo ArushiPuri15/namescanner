@@ -26,9 +26,9 @@ export function buildRegistryActions(
   };
 
   if (locale.country.toUpperCase() === "IN") {
-    actions.mcaSearchUrl = `https://www.mca.gov.in/content/mca/global/en/mca/master-data/MDS.html`;
-    actions.ipIndiaSearchUrl = `https://ipindiaonline.gov.in/tmrpublicsearch/frmmain.aspx`;
-    actions.googleSearchUrl = `https://www.google.com/search?q=${encoded}+india+company`;
+    actions.mcaSearchUrl = `https://www.google.com/search?q=${encoded}+site:mca.gov.in+company`;
+    actions.ipIndiaSearchUrl = `https://www.google.com/search?q=${encoded}+site:ipindiaonline.gov.in+trademark`;
+    actions.googleSearchUrl = `https://www.google.com/search?q=${encoded}+india+private+limited+company`;
   }
 
   return actions;

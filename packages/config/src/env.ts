@@ -13,6 +13,15 @@ const envSchema = z.object({
   PROBE_MODE: z.enum(["stub", "live"]).default("live"),
   RDAP_BASE_URL: z.string().url().default("https://rdap.cloud/api/v1"),
   BRAVE_SEARCH_API_KEY: z.string().optional(),
+  BRAVE_SEARCH_BASE_URL: z
+    .string()
+    .url()
+    .default("https://api.search.brave.com/res/v1/web/search"),
+  GITHUB_API_TOKEN: z.string().optional(),
+  GODADDY_API_KEY: z.string().optional(),
+  GODADDY_API_SECRET: z.string().optional(),
+  /** ote = sandbox (api.ote-godaddy.com), production = api.godaddy.com */
+  GODADDY_API_ENV: z.enum(["ote", "production"]).default("ote"),
   NAMECHEAP_API_USER: z.string().optional(),
   NAMECHEAP_API_KEY: z.string().optional(),
   NAMECHEAP_CLIENT_IP: z.string().optional(),

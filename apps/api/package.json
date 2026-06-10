@@ -12,6 +12,9 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.14.4",
+    "@namescanner/adapters-brave": "workspace:*",
+    "@namescanner/adapters-godaddy": "workspace:*",
+    "@namescanner/adapters-github": "workspace:*",
     "@namescanner/adapters-namecheap": "workspace:*",
     "@namescanner/adapters-rdap": "workspace:*",
     "@namescanner/adapters-stub": "workspace:*",

@@ -1,0 +1,15 @@
+{
+  "query": {
+    "original": "\"Matrix Infotech\" company IN",
+    "show_strict_warning": false
+  },
+  "web": {
+    "results": [
+      {
+        "title": "Matrix Infotech Solutions Pvt Ltd",
+        "url": "https://matrixinfotech.example.com/",
+        "description": "Matrix Infotech provides IT services in India."
+      }
+    ]
+  }
+}

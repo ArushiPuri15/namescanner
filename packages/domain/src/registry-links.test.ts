@@ -9,8 +9,8 @@ describe("registry links", () => {
   it("builds India-specific registry actions", () => {
     const actions = buildRegistryActions("Matrix Devworks", { country: "IN" });
 
-    expect(actions.mcaSearchUrl).toContain("mca.gov.in");
-    expect(actions.ipIndiaSearchUrl).toContain("ipindiaonline.gov.in");
+    expect(actions.mcaSearchUrl).toContain("site:mca.gov.in");
+    expect(actions.ipIndiaSearchUrl).toContain("site:ipindiaonline.gov.in");
     expect(actions.googleSearchUrl).toContain(encodeURIComponent("Matrix Devworks"));
   });
 });

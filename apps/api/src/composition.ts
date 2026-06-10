@@ -1,4 +1,7 @@
 import type { AvailabilityProbe, DomainPricingProvider } from "@namescanner/application";
+import { BraveWebProbe } from "@namescanner/adapters-brave";
+import { GodaddyDomainProbe } from "@namescanner/adapters-godaddy";
+import { GithubHandleProbe } from "@namescanner/adapters-github";
 import { NamecheapPricingProvider } from "@namescanner/adapters-namecheap";
 import { RdapDomainProbe } from "@namescanner/adapters-rdap";
 import {
@@ -14,7 +17,35 @@ export type ProbeRegistry = {
   warnings: string[];
 };
 
-function createNamecheapPricing(env: AppEnv): DomainPricingProvider | null {
+function godaddyBaseUrl(env: AppEnv): string {
+  return env.GODADDY_API_ENV === "production"
+    ? "https://api.godaddy.com"
+    : "https://api.ote-godaddy.com";
+}
+
+function hasGodaddyCredentials(env: AppEnv): boolean {
+  return Boolean(env.GODADDY_API_KEY && env.GODADDY_API_SECRET);
+}
+
+function createDomainProbe(env: AppEnv): AvailabilityProbe {
+  if (hasGodaddyCredentials(env)) {
+    return new GodaddyDomainProbe({
+      apiKey: env.GODADDY_API_KEY as string,
+      apiSecret: env.GODADDY_API_SECRET as string,
+      baseUrl: godaddyBaseUrl(env),
+    });
+  }
+
+  return new RdapDomainProbe({
+    baseUrl: env.RDAP_BASE_URL,
+  });
+}
+
+function createRegistrarPricing(env: AppEnv): DomainPricingProvider | null {
+  if (hasGodaddyCredentials(env)) {
+    return null;
+  }
+
   if (!env.NAMECHEAP_API_USER || !env.NAMECHEAP_API_KEY || !env.NAMECHEAP_CLIENT_IP) {
     return null;
   }
@@ -48,17 +79,37 @@ export function createProbeRegistry(env: AppEnv): ProbeRegistry {
   }
 
   const probes: AvailabilityProbe[] = [
-    new RdapDomainProbe({
-      baseUrl: env.RDAP_BASE_URL,
+    createDomainProbe(env),
+    new GithubHandleProbe({
+      apiToken: env.GITHUB_API_TOKEN,
     }),
   ];
 
-  if (!env.BRAVE_SEARCH_API_KEY) {
+  if (env.BRAVE_SEARCH_API_KEY) {
+    probes.push(
+      new BraveWebProbe({
+        apiKey: env.BRAVE_SEARCH_API_KEY,
+        baseUrl: env.BRAVE_SEARCH_BASE_URL,
+      }),
+    );
+  } else {
     warnings.push("BRAVE_SEARCH_API_KEY is not set — web collision probe unavailable");
   }
 
-  const pricing = createNamecheapPricing(env);
-  if (!pricing) {
+  if (!env.GITHUB_API_TOKEN) {
+    warnings.push(
+      "GITHUB_API_TOKEN is not set — GitHub probe uses anonymous rate limits (60 req/hr)",
+    );
+  }
+
+  if (hasGodaddyCredentials(env)) {
+    if (env.GODADDY_API_ENV === "ote") {
+      warnings.push("GoDaddy OTE sandbox — domain prices and availability are for testing only");
+    }
+  }
+
+  const pricing = createRegistrarPricing(env);
+  if (!pricing && !hasGodaddyCredentials(env)) {
     warnings.push("Registrar pricing is not configured — budget filters are unavailable");
   }
 

@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { ProbeResult, ScanReport, ScanRequest } from "@namescanner/contracts";
 import {
   buildCandidatePricing,
+  buildCandidatePricingFromGodaddyDomains,
   buildRegistryActions,
   derivePricingRisks,
   deriveRisks,
@@ -58,11 +59,6 @@ export async function runNameScan(input: RunNameScanInput): Promise<ScanReport> 
     );
   }
 
-  const pricingRisks = derivePricingRisks(
-    pricingSnapshot,
-    request.constraints.maxDomainPriceInr,
-  );
-
   const candidates = generateCandidates(
     request.seed,
     request.suffixes,
@@ -77,6 +73,29 @@ export async function runNameScan(input: RunNameScanInput): Promise<ScanReport> 
 
       const partialFailures = probeResults.filter((result) => result.status === "error").length;
       const domainResults = probeResults.filter((result) => result.probe === "domain");
+      const godaddyDomain = domainResults.find((result) => result.provider === "godaddy");
+      const godaddyDomains = godaddyDomain?.evidence.domains;
+
+      let candidatePricing = pricingSnapshot;
+      if (Array.isArray(godaddyDomains)) {
+        candidatePricing =
+          buildCandidatePricingFromGodaddyDomains(
+            godaddyDomains as Array<{
+              tld: string;
+              amount?: number;
+              currency?: string;
+              periodYears?: number;
+            }>,
+            request.constraints.maxDomainPriceInr,
+            usdToInrRate,
+          ) ?? candidatePricing;
+      }
+
+      const pricingRisks = derivePricingRisks(
+        candidatePricing,
+        request.constraints.maxDomainPriceInr,
+      );
+
       const score = scoreCandidateFromProbes(candidate.label, toScoreInput(probeResults));
       const risks = deriveRisks({
         probes: toScoreInput(probeResults),
@@ -91,7 +110,7 @@ export async function runNameScan(input: RunNameScanInput): Promise<ScanReport> 
         name: candidate.label,
         domains: domainResults,
         probes: probeResults,
-        pricing: pricingSnapshot,
+        pricing: candidatePricing,
         score,
         risks: [...risks, ...pricingRisks],
         actions: buildRegistryActions(candidate.label, request.locale),
@@ -105,6 +124,10 @@ export async function runNameScan(input: RunNameScanInput): Promise<ScanReport> 
     reports.map(({ _partialFailures: _, ...candidate }) => candidate),
   );
 
+  const pricingProvider =
+    ranked.find((candidate) => candidate.pricing?.provider)?.pricing?.provider ??
+    pricingSnapshot?.provider;
+
   return {
     scanId: randomUUID(),
     candidates: ranked,
@@ -112,7 +135,7 @@ export async function runNameScan(input: RunNameScanInput): Promise<ScanReport> 
       partialFailures,
       durationMs: Date.now() - startedAt,
       probesRun: activeProbesForRequest.map((probe) => probe.id),
-      pricingProvider: pricingSnapshot?.provider,
+      pricingProvider,
     },
   };
 }
